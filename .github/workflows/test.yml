@@ -17,7 +17,8 @@ jobs:
         with:
           python-version: '3.12.14'
       - name: Install pinned wheel-only toolchain
-        run: python -m pip install --disable-pip-version-check --only-binary=:all: -r requirements-dev.txt
+        run: |
+          python -m pip install --disable-pip-version-check --only-binary=:all: -r requirements-dev.txt
       - name: Record exact source and toolchain
         run: |
           git rev-parse HEAD
