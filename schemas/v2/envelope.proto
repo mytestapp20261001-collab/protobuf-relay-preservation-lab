@@ -1,0 +1,23 @@
+syntax = "proto3";
+package relay_lab;
+
+enum State { STATE_UNSPECIFIED = 0; READY = 1; DEFERRED = 2; }
+message Details {
+  string name = 1;
+  optional int32 retry_after = 2;
+  repeated string tags = 3;
+  string future_note = 10;
+  optional int32 future_zero = 11;
+  repeated bytes future_chunks = 12;
+}
+message Envelope {
+  string id = 1;
+  uint32 hops = 2;
+  Details details = 3;
+  optional int32 priority = 4;
+  State state = 5;
+  repeated int32 samples = 6;
+  string future_label = 10;
+  optional int32 future_zero = 11;
+  repeated string future_routes = 12;
+}

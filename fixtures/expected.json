@@ -1,0 +1,145 @@
+[
+  {
+    "input": {
+      "details.future_chunks": [],
+      "details.future_note": "",
+      "details.future_zero.present": false,
+      "details.future_zero.value": 0,
+      "details.name": "",
+      "details.present": false,
+      "details.retry_after.present": false,
+      "details.retry_after.value": 0,
+      "details.tags": [],
+      "future_label": "",
+      "future_routes": [],
+      "future_zero.present": false,
+      "future_zero.value": 0,
+      "hops": 0,
+      "id": "absent",
+      "priority.present": false,
+      "priority.value": 0,
+      "samples": [],
+      "state": 0
+    },
+    "name": "absent"
+  },
+  {
+    "input": {
+      "details.future_chunks": [],
+      "details.future_note": "",
+      "details.future_zero.present": false,
+      "details.future_zero.value": 0,
+      "details.name": "",
+      "details.present": true,
+      "details.retry_after.present": true,
+      "details.retry_after.value": 0,
+      "details.tags": [],
+      "future_label": "",
+      "future_routes": [],
+      "future_zero.present": false,
+      "future_zero.value": 0,
+      "hops": 0,
+      "id": "known-defaults",
+      "priority.present": true,
+      "priority.value": 0,
+      "samples": [],
+      "state": 0
+    },
+    "name": "known-defaults"
+  },
+  {
+    "input": {
+      "details.future_chunks": [],
+      "details.future_note": "",
+      "details.future_zero.present": false,
+      "details.future_zero.value": 0,
+      "details.name": "",
+      "details.present": false,
+      "details.retry_after.present": false,
+      "details.retry_after.value": 0,
+      "details.tags": [],
+      "future_label": "retain me",
+      "future_routes": [
+        "east",
+        "west",
+        "east"
+      ],
+      "future_zero.present": true,
+      "future_zero.value": 0,
+      "hops": 2,
+      "id": "future-top",
+      "priority.present": false,
+      "priority.value": 0,
+      "samples": [],
+      "state": 0
+    },
+    "name": "future-top"
+  },
+  {
+    "input": {
+      "details.future_chunks": [
+        "00ff",
+        "",
+        "616263"
+      ],
+      "details.future_note": "inside known child",
+      "details.future_zero.present": true,
+      "details.future_zero.value": 0,
+      "details.name": "known child",
+      "details.present": true,
+      "details.retry_after.present": false,
+      "details.retry_after.value": 0,
+      "details.tags": [],
+      "future_label": "",
+      "future_routes": [],
+      "future_zero.present": false,
+      "future_zero.value": 0,
+      "hops": 4,
+      "id": "future-nested",
+      "priority.present": false,
+      "priority.value": 0,
+      "samples": [],
+      "state": 0
+    },
+    "name": "future-nested"
+  },
+  {
+    "input": {
+      "details.future_chunks": [
+        "61",
+        "62"
+      ],
+      "details.future_note": "child extension",
+      "details.future_zero.present": true,
+      "details.future_zero.value": 0,
+      "details.name": "nested",
+      "details.present": true,
+      "details.retry_after.present": true,
+      "details.retry_after.value": 0,
+      "details.tags": [
+        "b",
+        "a",
+        "b"
+      ],
+      "future_label": "new",
+      "future_routes": [
+        "one",
+        "two"
+      ],
+      "future_zero.present": true,
+      "future_zero.value": 0,
+      "hops": 9,
+      "id": "mixed",
+      "priority.present": true,
+      "priority.value": 0,
+      "samples": [
+        7,
+        -2,
+        7,
+        0
+      ],
+      "state": 2
+    },
+    "name": "mixed"
+  }
+]

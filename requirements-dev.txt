@@ -1,0 +1,5 @@
+-r requirements.txt
+grpcio==1.84.0
+grpcio-tools==1.84.0
+setuptools==84.0.0
+typing-extensions==4.16.0
