@@ -7,8 +7,15 @@ import sys
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "generated" / "v2"))
-import envelope_pb2 as new
-from google.protobuf.message import DecodeError
+_SETUP_ERROR = None
+try:
+    from google.protobuf.message import DecodeError
+    from google.protobuf.runtime_version import VersionError
+    import envelope_pb2 as new
+except ImportError:
+    _SETUP_ERROR = "Protobuf dependencies or generated bindings are unavailable; install requirements.txt."
+except VersionError:
+    _SETUP_ERROR = "Protobuf runtime and generated bindings are incompatible; install requirements.txt."
 
 MAX_BYTES = 65536
 MODES = ("preserve", "json", "fields", "passthrough")
@@ -55,6 +62,8 @@ def call_relay(payload, mode):
 
 
 def check(mode):
+    if _SETUP_ERROR is not None:
+        raise RuntimeError(_SETUP_ERROR)
     if mode not in MODES:
         raise ValueError("unknown relay mode")
     manifest = json.loads((ROOT / "fixtures" / "expected.json").read_text())
@@ -78,6 +87,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mode", choices=MODES, default="preserve")
     args = parser.parse_args()
+    if _SETUP_ERROR is not None:
+        print(json.dumps({"error": "DependencyError", "detail": _SETUP_ERROR}))
+        return 2
     try:
         report = check(args.mode)
     except (ValueError, OSError, DecodeError, subprocess.TimeoutExpired) as error:

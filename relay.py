@@ -4,9 +4,16 @@ import argparse
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "generated" / "v1"))
-import envelope_pb2 as old
-from google.protobuf import json_format
-from google.protobuf.message import DecodeError
+_SETUP_ERROR = None
+try:
+    from google.protobuf import json_format
+    from google.protobuf.message import DecodeError
+    from google.protobuf.runtime_version import VersionError
+    import envelope_pb2 as old
+except ImportError:
+    _SETUP_ERROR = "Protobuf dependencies or generated bindings are unavailable; install requirements.txt."
+except VersionError:
+    _SETUP_ERROR = "Protobuf runtime and generated bindings are incompatible; install requirements.txt."
 
 MAX_BYTES = 65536
 MODES = ("preserve", "json", "fields", "passthrough")
@@ -31,6 +38,8 @@ def copy_known_fields(source, target):
 
 
 def transform(payload: bytes, mode: str = "preserve") -> bytes:
+    if _SETUP_ERROR is not None:
+        raise RuntimeError(_SETUP_ERROR)
     if mode not in MODES:
         raise ValueError("unknown relay mode")
     if len(payload) > MAX_BYTES:
@@ -59,6 +68,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mode", choices=MODES, default="preserve")
     args = parser.parse_args()
+    if _SETUP_ERROR is not None:
+        print(f"relay setup error: {_SETUP_ERROR}", file=sys.stderr)
+        return 2
     try:
         output = transform(sys.stdin.buffer.read(MAX_BYTES + 1), args.mode)
     except (ValueError, TypeError, DecodeError) as error:

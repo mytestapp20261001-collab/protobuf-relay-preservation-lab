@@ -20,7 +20,7 @@ python3 -m venv .venv
 .venv/bin/python -B -m unittest -v
 ```
 
-`lab.py` prints JSON with each differing semantic field, its expected value and its actual value. Exit **0** means every case passed, **1** means the contract failed, and **2** means a setup/input/execution error. Negative-control commands intentionally return 1. A crash or parse error is not accepted as proof of the intended data-loss behavior.
+`lab.py` prints JSON with each differing semantic field, its expected value and its actual value. Exit **0** means every case passed, **1** means the contract failed, and **2** means a setup/input/execution error. Missing or incompatible Protobuf dependencies produce a setup error (exit 2), not a semantic failure; the lab emits JSON and the binary relay keeps stdout empty. Negative-control commands intentionally return 1. A crash or parse error is not accepted as proof of the intended data-loss behavior.
 
 Generated Python bindings and the five original synthetic binary inputs are checked in. They are produced by the pinned compiler, not a hand-written wire encoder. No gRPC server, broker, network socket, schema registry or external data is used. The compiler is only needed to regenerate them:
 

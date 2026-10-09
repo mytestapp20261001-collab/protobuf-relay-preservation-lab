@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 import random
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -23,6 +24,53 @@ def cli(name, *args, payload=None):
 
 
 class ContractTests(unittest.TestCase):
+    def test_missing_dependency_has_distinct_setup_exit(self):
+        # -S excludes installed site packages without uninstalling or mocking a runtime.
+        for script in ("lab.py", "relay.py"):
+            for mode in lab.MODES:
+                with self.subTest(script=script, mode=mode):
+                    result = subprocess.run(
+                        [sys.executable, "-S", "-B", str(ROOT / script), "--mode", mode],
+                        input=b"", stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10,
+                        env={"PATH": "/usr/bin:/bin"},
+                    )
+                    self.assertEqual(result.returncode, 2)
+                    self.assertNotIn(b"Traceback", result.stderr)
+                    if script == "lab.py":
+                        self.assertEqual(json.loads(result.stdout)["error"], "DependencyError")
+                        self.assertEqual(result.stderr, b"")
+                    else:
+                        self.assertEqual(result.stdout, b"")
+                        self.assertIn(b"relay setup error:", result.stderr)
+
+    def test_incompatible_bindings_have_distinct_setup_exit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for script in ("lab.py", "relay.py"):
+                shutil.copyfile(ROOT / script, root / script)
+            shutil.copytree(ROOT / "generated", root / "generated")
+            for version in ("v1", "v2"):
+                binding = root / "generated" / version / "envelope_pb2.py"
+                text = binding.read_text()
+                marker = "    7,\n    35,\n    1,"
+                self.assertEqual(text.count(marker), 1)
+                binding.write_text(text.replace(marker, "    999,\n    35,\n    1,"))
+            for script in ("lab.py", "relay.py"):
+                with self.subTest(script=script):
+                    result = subprocess.run(
+                        [sys.executable, "-B", str(root / script)], input=b"",
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10,
+                    )
+                    self.assertEqual(result.returncode, 2)
+                    self.assertNotIn(b"Traceback", result.stderr)
+                    if script == "lab.py":
+                        report = json.loads(result.stdout)
+                        self.assertEqual(report["error"], "DependencyError")
+                        self.assertIn("incompatible", report["detail"])
+                    else:
+                        self.assertEqual(result.stdout, b"")
+                        self.assertIn(b"incompatible", result.stderr)
+
     def test_preserving_relay(self):
         result = lab.check("preserve")
         self.assertTrue(result["passed"])
